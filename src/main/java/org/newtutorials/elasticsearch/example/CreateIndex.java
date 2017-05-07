@@ -34,7 +34,7 @@ public class CreateIndex {
             putMapping(indexName,node.client()
                     , documentsType
                     , "{\"properties\":{\"title\":{\"type\":\"string\"},\"author\":{\"type\":\"string\",\"index\":\"not_analyzed\"}}}");
-            XContentBuilder document = createDocumentXContent();
+            XContentBuilder document = createDocumentXContent("Test document", "Elastic Search", 100);
             IndexResponse response = node.client().prepareIndex(indexName, documentsType)
                     .setId("1")
                     .setSource(document).get();
@@ -52,17 +52,17 @@ public class CreateIndex {
         }
     }
 
-    private static XContentBuilder createDocumentXContent() throws IOException {
+    private static XContentBuilder createDocumentXContent(String title, String author, int pages) throws IOException {
         return XContentFactory.jsonBuilder()
                         .startObject()
-                        .field("title", "Test document")
-                        .field("author", "Elastic Search")
-                        .field("pages", 100)
+                        .field("title", title)
+                        .field("author", author)
+                        .field("pages", pages)
                         .endObject();
     }
 
     private static void createIndex(String index, Client client) throws NodeValidationException, InterruptedException, ExecutionException {
-        ActionFuture<IndicesExistsResponse> indicesExistsResponseAction = client.admin().indices().exists(new IndicesExistsRequest("aaa"));
+        ActionFuture<IndicesExistsResponse> indicesExistsResponseAction = client.admin().indices().exists(new IndicesExistsRequest(index));
         IndicesExistsResponse indicesExistsResponse = indicesExistsResponseAction.actionGet();
         if (!indicesExistsResponse.isExists())
         {
